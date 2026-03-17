@@ -1,0 +1,50 @@
+.sidebar{
+  width:220px;
+  padding:25px;
+  background-color:#FFB3C1;
+  border-right:2px solid #FB6F92;
+  height:100vh;
+}
+
+.sidebar-titulo{
+  font-size:20px;
+  margin-bottom:20px;
+  color:#8B2E3C;
+}
+
+.sidebar-lista{
+  list-style:none;
+}
+
+.sidebar-item{
+  padding:10px 12px;
+  cursor:pointer;
+  transition:0.25s ease;
+  position:relative;
+  color:#8B2E3C;
+}
+
+.sidebar-item:hover{
+  background-color:#FFE5EC;
+}
+
+/* linha animada */
+.sidebar-item::after{
+  content:"";
+  position:absolute;
+  left:12px;
+  bottom:2px;
+
+  width:70%;
+  height:2px;
+
+  background:linear-gradient(to right,#FB6F92,#FF8FA3,#FFB3C1);
+
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.3s ease;
+}
+
+.sidebar-item:hover::after{
+  transform:scaleX(1);
+}

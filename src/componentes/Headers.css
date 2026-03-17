@@ -1,0 +1,30 @@
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:20px 40px;
+
+  background-color:#FB6F92;
+  color:#FFF0F3;
+}
+
+.header h1{
+  font-size:24px;
+  font-weight:600;
+}
+
+.menu_header{
+  display:flex;
+  gap:25px;
+}
+
+.menu_header a{
+  color:#FFF0F3;
+  font-size:16px;
+  transition:0.2s;
+}
+
+.menu_header a:hover{
+  color:#FFE5EC;
+}
