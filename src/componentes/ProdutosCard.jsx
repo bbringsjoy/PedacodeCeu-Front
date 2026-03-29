@@ -1,17 +1,20 @@
-import "./ProdutoCard.css";
+import React from 'react';
 
-function ProdutoCard({ nome, preco, imagem }) {
+function ProdutoCard(props) {
   return (
-    <div className="produto-card">
-      <img src={imagem} alt={nome} className="produto-imagem" />
-
-      <div className="produto-info">
-        <h3>{nome}</h3>
-        <p className="produto-preco">R$ {preco}</p>
-
-        <button className="produto-botao">
-          Comprar
-        </button>
+    <div className="card-doce">
+      <img 
+        src={props.foto} 
+        alt={props.nomeProduto} 
+        className="card-img" 
+      />
+      
+      <div className="card-info">
+        <h2>{props.nomeProduto}</h2>
+        <p className="preco">R$ {props.precoProduto.toFixed(2)}</p>
+        <p className="descricao">{props.descricao}</p>
+        <p className="estoque"><small>Estoque: {props.quantidadeDisponivel}</small></p>
+        <button className="card-button">Ver mais</button>
       </div>
     </div>
   );
