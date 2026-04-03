@@ -1,37 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { cadastrarUsuario } from '../services/api';
+import { validarEmail, validarCPF, validarSenha, formatarCPF } from '../services/validacoes';
+import MensagemErro from '../componentes/MensagemErro';
 import './Cadastro.css';
-
-function validarCPF(cpf) {
-  cpf = cpf.replace(/[^\d]/g, '');
-  if (cpf.length !== 11) return false;
-  if (/^(\d)\1+$/.test(cpf)) return false;
-
-  let soma = 0;
-  for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
-  let resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf[9])) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  return resto === parseInt(cpf[10]);
-}
-
-function validarEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function formatarCPF(valor) {
-  return valor
-    .replace(/\D/g, '')
-    .slice(0, 11)
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-}
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -45,6 +17,8 @@ export default function Cadastro() {
   });
 
   const [erros, setErros] = useState({});
+  const [erroApi, setErroApi] = useState('');
+  const [carregando, setCarregando] = useState(false);
   const [enviado, setEnviado] = useState(false);
 
   function handleChange(e) {
@@ -56,7 +30,6 @@ export default function Cadastro() {
       setForm(prev => ({ ...prev, [name]: value }));
     }
 
-    // Limpa erro do campo ao digitar
     setErros(prev => ({ ...prev, [name]: '' }));
   }
 
@@ -79,8 +52,9 @@ export default function Cadastro() {
 
     if (!form.senha) {
       novosErros.senha = 'Senha é obrigatória.';
-    } else if (form.senha.length < 6) {
-      novosErros.senha = 'A senha deve ter ao menos 6 caracteres.';
+    } else {
+      const { valida, mensagem } = validarSenha(form.senha);
+      if (!valida) novosErros.senha = mensagem;
     }
 
     if (!form.confirmarSenha) {
@@ -92,8 +66,9 @@ export default function Cadastro() {
     return novosErros;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setErroApi('');
     const novosErros = validar();
 
     if (Object.keys(novosErros).length > 0) {
@@ -101,9 +76,21 @@ export default function Cadastro() {
       return;
     }
 
-    setEnviado(true);
-    // Aqui você conectaria com sua API/backend
-    setTimeout(() => navigate('/login'), 2000);
+    setCarregando(true);
+    try {
+      await cadastrarUsuario({
+        nome: form.nome,
+        email: form.email,
+        senha: form.senha,
+        cpf: form.cpf.replace(/\D/g, ''),
+      });
+      setEnviado(true);
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err) {
+      setErroApi(err instanceof Error ? err.message : 'Erro ao cadastrar');
+    } finally {
+      setCarregando(false);
+    }
   }
 
   if (enviado) {
@@ -123,6 +110,8 @@ export default function Cadastro() {
           <h1>Criar conta</h1>
           <p>Preencha os dados abaixo para se cadastrar</p>
         </div>
+
+        <MensagemErro mensagem={erroApi} />
 
         <form className="cadastro-form" onSubmit={handleSubmit} noValidate>
 
@@ -165,6 +154,7 @@ export default function Cadastro() {
               value={form.cpf}
               onChange={handleChange}
               inputMode="numeric"
+              maxLength={14}
             />
             {erros.cpf && <span className="erro-msg">{erros.cpf}</span>}
           </div>
@@ -176,7 +166,7 @@ export default function Cadastro() {
               id="senha"
               name="senha"
               type="password"
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mín. 8 caracteres, maiúscula, número e especial"
               value={form.senha}
               onChange={handleChange}
             />
@@ -197,8 +187,8 @@ export default function Cadastro() {
             {erros.confirmarSenha && <span className="erro-msg">{erros.confirmarSenha}</span>}
           </div>
 
-          <button type="submit" className="btn-cadastrar">
-            Criar conta
+          <button type="submit" className="btn-cadastrar" disabled={carregando}>
+            {carregando ? 'Cadastrando...' : 'Criar conta'}
           </button>
         </form>
 

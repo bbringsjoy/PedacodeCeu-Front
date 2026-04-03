@@ -1,55 +1,104 @@
-import React from 'react';
-import ProdutoCard from '../componentes/ProdutosCard'; 
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { listarProdutos, deletarProduto } from '../services/api';
+import Paginacao from '../componentes/Paginacao';
+import MensagemErro from '../componentes/MensagemErro';
 
-import imgBolo from '../ativos/bolo.png'; 
-import imgBrownie from '../ativos/brownie.png';
-import imgCookie from '../ativos/cookie.png';
+export default function Produtos() {
+  const [produtos, setProdutos] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-function Produtos() {
-  const listaDeDoces = [
-    { 
-      id: 1, 
-      nome: "Bolo teste", 
-      preco: 45.00, 
-      desc: "Bolo qualquer.",
-      qtd: 10,
-      imagem: imgBolo
-    },
-    { 
-      id: 2, 
-      nome: "Brownie ruim", 
-      preco: 12.50, 
-      desc: "Brownie podre.",
-      qtd: 15,
-      imagem: imgBrownie
-    },
-    { 
-      id: 3, 
-      nome: "Cookie teste2", 
-      preco: 8.00, 
-      desc: "Cookie blablabla.",
-      qtd: 20,
-      imagem: imgCookie
+  useEffect(() => {
+    buscarProdutos();
+  }, [pagina]);
+
+  async function buscarProdutos() {
+    setCarregando(true);
+    setErro('');
+    try {
+      const resposta = await listarProdutos(pagina, 10);
+      setProdutos(resposta.dados);
+      setTotalPaginas(resposta.meta.totalPaginas);
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'Erro ao carregar produtos');
+    } finally {
+      setCarregando(false);
     }
-  ];
+  }
+
+  async function handleDeletar(id) {
+    if (!window.confirm('Deseja excluir este produto?')) return;
+    try {
+      await deletarProduto(id);
+      await buscarProdutos();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'Erro ao excluir produto');
+    }
+  }
 
   return (
-    <div style={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2>Nossa Vitrine</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' , marginTop: '20px' }}>
-        {listaDeDoces.map((doce) => (
-          <ProdutoCard 
-            key={doce.id} 
-            nomeProduto={doce.nome} 
-            precoProduto={doce.preco} 
-            descricao={doce.desc}
-            quantidadeDisponivel={doce.qtd}
-            foto={doce.imagem}
-          />
-        ))}
+    <div className="pagina-crud">
+      <div className="pagina-crud__topo">
+        <h2>🍰 Produtos</h2>
+        <Link to="/produtos/novo">
+          <button className="botao botao--primario" style={{ width: 'auto' }}>+ Novo Produto</button>
+        </Link>
       </div>
+
+      <MensagemErro mensagem={erro} />
+
+      {carregando ? (
+        <p>Carregando...</p>
+      ) : (
+        <div className="tabela-wrapper">
+          <table className="tabela">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Preço</th>
+                <th>Categoria</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {produtos.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: '#999' }}>
+                    Nenhum produto encontrado
+                  </td>
+                </tr>
+              ) : (
+                produtos.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.id}</td>
+                    <td>{p.nome}</td>
+                    <td>{p.descricao}</td>
+                    <td>R$ {Number(p.preco).toFixed(2).replace('.', ',')}</td>
+                    <td>{p.categoriaId}</td>
+                    <td>
+                      <div className="tabela__acoes">
+                        <Link to={`/produtos/editar/${p.id}`}>
+                          <button className="btn-sm btn-sm--editar">Editar</button>
+                        </Link>
+                        <button className="btn-sm btn-sm--deletar" onClick={() => handleDeletar(p.id)}>
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
     </div>
   );
 }
-
-export default Produtos;
