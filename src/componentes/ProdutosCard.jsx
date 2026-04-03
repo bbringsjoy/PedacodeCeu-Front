@@ -1,19 +1,30 @@
 import React from 'react';
+import './ProdutosCard.css';
 
-function ProdutoCard(props) {
+function ProdutoCard({ produto, nomeProduto, precoProduto, descricao, quantidadeDisponivel, foto }) {
+  // Suporta tanto a versão antiga (props diretas) quanto a nova (objeto produto)
+  const nome = produto ? produto.nome : nomeProduto;
+  const preco = produto ? produto.preco : precoProduto;
+  const desc = produto ? produto.descricao : descricao;
+  const imagem = produto ? produto.imagem : foto;
+  const qtd = produto ? produto.quantidade : quantidadeDisponivel;
+
   return (
     <div className="card-doce">
-      <img 
-        src={props.foto} 
-        alt={props.nomeProduto} 
-        className="card-img" 
-      />
-      
+      {imagem && (
+        <img
+          src={imagem}
+          alt={nome}
+          className="card-img"
+        />
+      )}
       <div className="card-info">
-        <h2>{props.nomeProduto}</h2>
-        <p className="preco">R$ {props.precoProduto.toFixed(2)}</p>
-        <p className="descricao">{props.descricao}</p>
-        <p className="estoque"><small>Estoque: {props.quantidadeDisponivel}</small></p>
+        <h2>{nome}</h2>
+        <p className="preco">R$ {Number(preco).toFixed(2)}</p>
+        <p className="descricao">{desc}</p>
+        {qtd !== undefined && (
+          <p className="estoque"><small>Estoque: {qtd}</small></p>
+        )}
         <button className="card-button">Ver mais</button>
       </div>
     </div>
