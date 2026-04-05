@@ -5,8 +5,30 @@ import './Footer.css';
 function Footer() {
   return (
     <footer className="footer">
-      <p>Desenvolvido por: Beatriz Gomes Santana</p>
-      <Link to="/sobre">Sobre</Link>
+      <div className="footer-top">
+        <div className="footer-bloco">
+          <h3>🍰 Pedaço do Céu</h3>
+          <p>Doces artesanais feitos com carinho para adoçar o seu dia.</p>
+        </div>
+
+        <div className="footer-bloco">
+          <h4>Navegação</h4>
+          <Link to="/">Início</Link>
+          <Link to="/sobre">Conheça a nossa empresa</Link>
+          <Link to="/carrinho">Carrinho</Link>
+        </div>
+
+        <div className="footer-bloco">
+          <h4>Acesso</h4>
+          <Link to="/login">Login</Link>
+          <Link to="/cadastro">Cadastrar</Link>
+          <Link to="/adm/login">Login Administrador</Link>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <p>Desenvolvido por: Beatriz Gomes Santana</p>
+      </div>
     </footer>
   );
 }

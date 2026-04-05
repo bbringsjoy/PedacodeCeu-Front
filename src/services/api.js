@@ -29,6 +29,15 @@ export async function loginApi(payload) {
   return tratarResposta(res);
 }
 
+export async function loginAdminApi(payload) {
+  const res = await fetch(`${BASE_URL}/auth/login/admin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return tratarResposta(res);
+}
+
 export async function cadastrarUsuario(payload) {
   const res = await fetch(`${BASE_URL}/usuarios`, {
     method: "POST",

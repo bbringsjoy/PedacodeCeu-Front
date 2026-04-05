@@ -5,7 +5,7 @@ import { listarCategorias } from '../services/api';
 import './Sidebar.css';
 
 function Sidebar() {
-  const { usuario } = useAuth();
+  const { usuario, isAdmin } = useAuth();
   const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
@@ -36,16 +36,26 @@ function Sidebar() {
           <>
             <li className="sidebar-separador" />
             <li className="sidebar-item">
-              <NavLink to="/produtos">📋 Gerenciar Produtos</NavLink>
-            </li>
-            <li className="sidebar-item">
-              <NavLink to="/categorias">📂 Gerenciar Categorias</NavLink>
-            </li>
-            <li className="sidebar-item">
-              <NavLink to="/pedidos">📦 Pedidos</NavLink>
+              <NavLink to="/pedidos">📦 Meus Pedidos</NavLink>
             </li>
             <li className="sidebar-item">
               <NavLink to="/perfil">👤 Meu Perfil</NavLink>
+            </li>
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            <li className="sidebar-separador" />
+            <p className="sidebar-secao">Administração</p>
+            <li className="sidebar-item">
+              <NavLink to="/admin/produtos">📋 Produtos</NavLink>
+            </li>
+            <li className="sidebar-item">
+              <NavLink to="/admin/categorias">📂 Categorias</NavLink>
+            </li>
+            <li className="sidebar-item">
+              <NavLink to="/admin/usuarios">👥 Usuários</NavLink>
             </li>
           </>
         )}

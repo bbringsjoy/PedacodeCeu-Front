@@ -193,3 +193,15 @@
   line-height: 1.8;
   margin-bottom: 16px;
 }
+
+.admin-badge {
+  background: #4b2c20;
+  color: #F3E9DC;
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+}
