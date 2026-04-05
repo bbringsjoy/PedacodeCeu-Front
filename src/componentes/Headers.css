@@ -74,3 +74,28 @@
   background: #d2b48c;
   color: #4b2c20;
 }
+
+.carrinho-btn {
+  position: relative;
+  font-size: 1.4rem;
+  color: #F3E9DC;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.carrinho-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #d2b48c;
+  color: #4b2c20;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
