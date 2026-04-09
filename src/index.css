@@ -205,3 +205,12 @@
   margin-bottom: 16px;
   letter-spacing: 0.04em;
 }
+
+.formulario-auth .botao--primario {
+  background: #4b2c20;
+  color: #F3E9DC;
+}
+
+.formulario-auth .botao--primario:hover {
+  background: #693e06;
+}

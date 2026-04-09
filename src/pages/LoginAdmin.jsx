@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { validarEmail } from '../services/validacoes';
 import CampoTexto from '../componentes/CampoTexto';
-import Botao from '../componentes/Botao';
 import MensagemErro from '../componentes/MensagemErro';
 
 export default function LoginAdmin() {
@@ -63,9 +62,13 @@ export default function LoginAdmin() {
           erro={erros.senha}
           placeholder="Sua senha"
         />
-        <Botao onClick={handleSubmit} carregando={carregando}>
-          Entrar como Administrador
-        </Botao>
+        <button
+          className="btn-cadastrar"
+          onClick={handleSubmit}
+          disabled={carregando}
+        >
+          {carregando ? 'Entrando...' : 'Entrar como Administrador'}
+        </button>
       </div>
     </div>
   );
