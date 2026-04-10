@@ -27,11 +27,13 @@ export default function Home() {
     buscar();
   }, []);
 
-  const destaques = produtos.filter((p) => p.destaque).slice(0, 5);
-
   const produtosFiltrados = categoriaFiltro
     ? produtos.filter((p) => p.categoriaId === categoriaFiltro)
     : produtos;
+
+  const destaques = categoriaFiltro
+    ? produtosFiltrados.filter((p) => p.destaque).slice(0, 5)
+    : produtos.filter((p) => p.destaque).slice(0, 5);
 
   return (
     <div className="home-container">
@@ -48,12 +50,14 @@ export default function Home() {
       </div>
 
       <section className="destaques">
-        <h2>✨ Produtos em Destaque ✨</h2>
+        <h2>
+          {categoriaFiltro ? '✨ Destaques da Categoria ✨' : '✨ Produtos em Destaque ✨'}
+        </h2>
 
         {carregando ? (
           <p>Carregando...</p>
         ) : destaques.length === 0 ? (
-          <p style={{ color: '#999', marginTop: 20 }}>Nenhum produto em destaque.</p>
+          <p style={{ color: '#999', marginTop: 20 }}>Nenhum produto em destaque nessa categoria.</p>
         ) : (
           <div className="destaques-grid">
             {destaques.map((produto) => (

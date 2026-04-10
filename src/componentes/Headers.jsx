@@ -30,9 +30,6 @@ function Header() {
 
         {usuario ? (
           <>
-            <Link to="/produtos">Produtos</Link>
-            <Link to="/categorias">Categorias</Link>
-            <Link to="/pedidos">Pedidos</Link>
             <Link to="/perfil">Olá, {usuario.nome.split(' ')[0]}</Link>
             <button className="btn-logout" onClick={handleLogout}>Sair</button>
           </>

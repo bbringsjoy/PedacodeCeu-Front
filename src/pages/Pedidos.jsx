@@ -1,48 +1,44 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { listarPedidos, deletarPedido } from "../services/api";
-import Paginacao from "../componentes/Paginacao";
-import MensagemErro from "../componentes/MensagemErro";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { listarPedidos, deletarPedido } from '../services/api';
+import MensagemErro from '../componentes/MensagemErro';
 
 const STATUS_CORES = {
-  pendente: "#ed8936",
-  confirmado: "#3182ce",
-  entregue: "#38a169",
-  cancelado: "#e53e3e",
+  pendente:   { bg: '#ed8936', label: 'Pendente' },
+  confirmado: { bg: '#3182ce', label: 'Confirmado' },
+  entregue:   { bg: '#38a169', label: 'Entregue' },
+  cancelado:  { bg: '#e53e3e', label: 'Cancelado' },
 };
 
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
-  const [pagina, setPagina] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const [erro, setErro] = useState("");
+  const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
     buscar();
-  }, [pagina]);
+  }, []);
 
   async function buscar() {
     setCarregando(true);
-    setErro("");
+    setErro('');
     try {
-      const res = await listarPedidos(pagina, 10);
+      const res = await listarPedidos();
       setPedidos(res.dados);
-      setTotalPaginas(res.meta.totalPaginas);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro ao carregar pedidos");
+      setErro(err instanceof Error ? err.message : 'Erro ao carregar pedidos');
     } finally {
       setCarregando(false);
     }
   }
 
   async function handleDeletar(id) {
-    if (!window.confirm("Deseja excluir este pedido?")) return;
+    if (!window.confirm('Deseja excluir este pedido?')) return;
     try {
       await deletarPedido(id);
       await buscar();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro ao excluir pedido");
+      setErro(err instanceof Error ? err.message : 'Erro ao excluir pedido');
     }
   }
 
@@ -51,7 +47,7 @@ export default function Pedidos() {
       <div className="pagina-crud__topo">
         <h2>📦 Pedidos</h2>
         <Link to="/pedidos/novo">
-          <button className="botao botao--primario" style={{ width: "auto" }}>+ Novo Pedido</button>
+          <button className="botao botao--primario" style={{ width: 'auto' }}>+ Novo Pedido</button>
         </Link>
       </div>
 
@@ -64,55 +60,60 @@ export default function Pedidos() {
           <table className="tabela">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Usuário</th>
                 <th>Status</th>
                 <th>Total</th>
+                <th>Itens</th>
                 <th>Data</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {pedidos.length === 0 ? (
-                <tr><td colSpan={6} style={{ textAlign: "center", padding: 24, color: "#999" }}>Nenhum pedido encontrado</td></tr>
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: '#999' }}>
+                    Nenhum pedido encontrado
+                  </td>
+                </tr>
               ) : (
-                pedidos.map((p) => (
-                  <tr key={p.id}>
-                    <td>{p.id}</td>
-                    <td>{p.usuarioId}</td>
-                    <td>
-                      <span style={{
-                        background: STATUS_CORES[p.status] ?? "#999",
-                        color: "white",
-                        padding: "3px 9px",
-                        borderRadius: 20,
-                        fontSize: "0.78rem",
-                        fontWeight: 600,
-                      }}>
-                        {p.status}
-                      </span>
-                    </td>
-                    <td>R$ {Number(p.total).toFixed(2).replace(".", ",")}</td>
-                    <td>{new Date(p.createdAt).toLocaleDateString("pt-BR")}</td>
-                    <td>
-                      <div className="tabela__acoes">
-                        <Link to={`/pedidos/editar/${p.id}`}>
-                          <button className="btn-sm btn-sm--editar">Editar</button>
-                        </Link>
-                        <button className="btn-sm btn-sm--deletar" onClick={() => handleDeletar(p.id)}>
-                          Excluir
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                pedidos.map((p) => {
+                  const cor = STATUS_CORES[p.status] ?? { bg: '#999', label: p.status };
+                  return (
+                    <tr key={p.id}>
+                      <td>{p.usuario?.nome ?? p.usuarioId}</td>
+                      <td>
+                        <span style={{
+                          background: cor.bg,
+                          color: 'white',
+                          padding: '3px 10px',
+                          borderRadius: 20,
+                          fontSize: '0.78rem',
+                          fontWeight: 600,
+                        }}>
+                          {cor.label}
+                        </span>
+                      </td>
+                      <td>R$ {Number(p.total).toFixed(2).replace('.', ',')}</td>
+                      <td>{p.itens?.length ?? '—'} {p.itens?.length === 1 ? 'item' : 'itens'}</td>
+                      <td>{new Date(p.createdAt).toLocaleDateString('pt-BR')}</td>
+                      <td>
+                        <div className="tabela__acoes">
+                          <Link to={`/pedidos/editar/${p.id}`}>
+                            <button className="btn-sm btn-sm--editar">Editar</button>
+                          </Link>
+                          <button className="btn-sm btn-sm--deletar" onClick={() => handleDeletar(p.id)}>
+                            Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       )}
-
-      <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
     </div>
   );
 }

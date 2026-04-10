@@ -11,30 +11,25 @@ export default function CategoriaForm() {
   const editando = Boolean(id);
 
   const [nome, setNome] = useState("");
-  const [descricao, setDescricao] = useState("");
   const [erros, setErros] = useState({});
   const [erroApi, setErroApi] = useState("");
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
-    if (editando && id) carregarCategoria(Number(id));
+    if (editando && id) carregarCategoria(id);
   }, []);
 
   async function carregarCategoria(catId) {
     try {
-      const res = await listarCategorias(1, 100);
+      const res = await listarCategorias();
       const cat = res.dados.find((c) => c.id === catId);
-      if (cat) {
-        setNome(cat.nome);
-        setDescricao(cat.descricao);
-      }
+      if (cat) setNome(cat.nome);
     } catch {}
   }
 
   function validar() {
     const novosErros = {};
     if (!nome.trim()) novosErros.nome = "Nome é obrigatório";
-    if (!descricao.trim()) novosErros.descricao = "Descrição é obrigatória";
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   }
@@ -45,11 +40,11 @@ export default function CategoriaForm() {
     setCarregando(true);
     try {
       if (editando && id) {
-        await editarCategoria(Number(id), { nome, descricao });
+        await editarCategoria(id, { nome });
       } else {
-        await criarCategoria({ nome, descricao });
+        await criarCategoria({ nome });
       }
-      navigate("/categorias");
+      navigate("/admin/categorias");
     } catch (err) {
       setErroApi(err instanceof Error ? err.message : "Erro ao salvar categoria");
     } finally {
@@ -64,10 +59,20 @@ export default function CategoriaForm() {
       </div>
       <div className="perfil-form">
         <MensagemErro mensagem={erroApi} />
-        <CampoTexto id="nome" label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} erro={erros.nome} />
-        <CampoTexto id="descricao" label="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} erro={erros.descricao} />
+        <CampoTexto
+          id="nome"
+          label="Nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          erro={erros.nome}
+          placeholder="Ex: Bolos, Cookies..."
+        />
         <div style={{ display: "flex", gap: 12 }}>
-          <button className="botao botao--secundario" style={{ width: "auto" }} onClick={() => navigate("/categorias")}>
+          <button
+            className="botao botao--secundario"
+            style={{ width: "auto" }}
+            onClick={() => navigate("/admin/categorias")}
+          >
             Cancelar
           </button>
           <Botao onClick={handleSubmit} carregando={carregando}>

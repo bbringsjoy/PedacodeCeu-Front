@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { listarCategorias } from '../services/api';
@@ -6,17 +6,23 @@ import './Sidebar.css';
 
 function Sidebar() {
   const { usuario, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
-    async function buscar() {
-      try {
-        const res = await listarCategorias();
-        setCategorias(res.dados);
-      } catch {}
-    }
     buscar();
   }, []);
+
+  async function buscar() {
+    try {
+      const res = await listarCategorias();
+      setCategorias(res.dados);
+    } catch {}
+  }
+
+  function handleCategoria(categoriaId) {
+    navigate(`/?categoria=${categoriaId}`);
+  }
 
   return (
     <aside className="sidebar">
@@ -26,11 +32,21 @@ function Sidebar() {
           <NavLink to="/" end>🏠 Início</NavLink>
         </li>
 
-        {categorias.map((cat) => (
-          <li key={cat.id} className="sidebar-item">
-            <NavLink to={`/?categoria=${cat.id}`}>🍰 {cat.nome}</NavLink>
-          </li>
-        ))}
+        {categorias.length > 0 && (
+          <>
+            <li className="sidebar-separador" />
+            {categorias.map((cat) => (
+              <li key={cat.id} className="sidebar-item">
+                <button
+                  className="sidebar-btn"
+                  onClick={() => handleCategoria(cat.id)}
+                >
+                  🍰 {cat.nome}
+                </button>
+              </li>
+            ))}
+          </>
+        )}
 
         {usuario && (
           <>
