@@ -15,7 +15,7 @@ function Sidebar() {
 
   async function buscar() {
     try {
-      const res = await listarCategorias();
+      const res = await listarCategorias(1, 100);
       setCategorias(res.dados);
     } catch {}
   }

@@ -1,23 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarProdutos, deletarProduto } from '../services/api';
+import Paginacao from '../componentes/Paginacao';
 import MensagemErro from '../componentes/MensagemErro';
 
 export default function Produtos() {
   const [produtos, setProdutos] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
     buscarProdutos();
-  }, []);
+  }, [pagina]);
 
   async function buscarProdutos() {
     setCarregando(true);
     setErro('');
     try {
-      const resposta = await listarProdutos();
+      const resposta = await listarProdutos(pagina, 10);
       setProdutos(resposta.dados);
+      setTotalPaginas(resposta.meta.totalPaginas);
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro ao carregar produtos');
     } finally {
@@ -95,6 +99,8 @@ export default function Produtos() {
           </table>
         </div>
       )}
+
+      <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
     </div>
   );
 }

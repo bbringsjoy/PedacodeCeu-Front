@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
 function getToken() {
   return localStorage.getItem("token");
@@ -56,12 +56,11 @@ export async function editarUsuario(id, payload) {
   return tratarResposta(res);
 }
 
-export async function listarCategorias() {
-  const res = await fetch(`${BASE_URL}/categorias`, {
+export async function listarCategorias(pagina = 1, limite = 100) {
+  const res = await fetch(`${BASE_URL}/categorias?pagina=${pagina}&limite=${limite}`, {
     headers: headersAutenticados(),
   });
-  const data = await tratarResposta(res);
-  return { dados: Array.isArray(data) ? data : data.dados ?? [] };
+  return tratarResposta(res);
 }
 
 export async function criarCategoria(dados) {
@@ -90,12 +89,11 @@ export async function deletarCategoria(id) {
   return tratarResposta(res);
 }
 
-export async function listarProdutos() {
-  const res = await fetch(`${BASE_URL}/produtos`, {
+export async function listarProdutos(pagina = 1, limite = 10) {
+  const res = await fetch(`${BASE_URL}/produtos?pagina=${pagina}&limite=${limite}`, {
     headers: headersAutenticados(),
   });
-  const data = await tratarResposta(res);
-  return { dados: Array.isArray(data) ? data : data.dados ?? [] };
+  return tratarResposta(res);
 }
 
 export async function buscarProduto(id) {
@@ -146,12 +144,11 @@ export async function deletarProduto(id) {
   return tratarResposta(res);
 }
 
-export async function listarPedidos() {
-  const res = await fetch(`${BASE_URL}/pedidos`, {
+export async function listarPedidos(pagina = 1, limite = 10) {
+  const res = await fetch(`${BASE_URL}/pedidos?pagina=${pagina}&limite=${limite}`, {
     headers: headersAutenticados(),
   });
-  const data = await tratarResposta(res);
-  return { dados: Array.isArray(data) ? data : data.dados ?? [] };
+  return tratarResposta(res);
 }
 
 export async function criarPedido(dados) {
@@ -159,7 +156,6 @@ export async function criarPedido(dados) {
     method: "POST",
     headers: headersAutenticados(),
     body: JSON.stringify({
-      usuarioId: dados.usuarioId,
       status: dados.status || "pendente",
       itens: dados.itens,
     }),

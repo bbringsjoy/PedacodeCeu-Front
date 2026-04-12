@@ -1,23 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarCategorias, deletarCategoria } from '../services/api';
+import Paginacao from '../componentes/Paginacao';
 import MensagemErro from '../componentes/MensagemErro';
 
 export default function Categorias() {
   const [categorias, setCategorias] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
     buscar();
-  }, []);
+  }, [pagina]);
 
   async function buscar() {
     setCarregando(true);
     setErro('');
     try {
-      const res = await listarCategorias();
+      const res = await listarCategorias(pagina, 10);
       setCategorias(res.dados);
+      setTotalPaginas(res.meta.totalPaginas);
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro ao carregar categorias');
     } finally {
@@ -85,6 +89,8 @@ export default function Categorias() {
           </table>
         </div>
       )}
+
+      <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
     </div>
   );
 }

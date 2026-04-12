@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarPedidos, deletarPedido } from '../services/api';
+import Paginacao from '../componentes/Paginacao';
 import MensagemErro from '../componentes/MensagemErro';
 
 const STATUS_CORES = {
@@ -12,19 +13,22 @@ const STATUS_CORES = {
 
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
     buscar();
-  }, []);
+  }, [pagina]);
 
   async function buscar() {
     setCarregando(true);
     setErro('');
     try {
-      const res = await listarPedidos();
+      const res = await listarPedidos(pagina, 10);
       setPedidos(res.dados);
+      setTotalPaginas(res.meta.totalPaginas);
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro ao carregar pedidos');
     } finally {
@@ -114,6 +118,8 @@ export default function Pedidos() {
           </table>
         </div>
       )}
+
+      <Paginacao pagina={pagina} totalPaginas={totalPaginas} onMudar={setPagina} />
     </div>
   );
 }

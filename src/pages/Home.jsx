@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     async function buscar() {
       try {
-        const res = await listarProdutos();
+        const res = await listarProdutos(1, 100);
         setProdutos(res.dados.filter((p) => p.ativo !== false));
       } catch {
         setProdutos([]);
@@ -53,7 +53,6 @@ export default function Home() {
         <h2>
           {categoriaFiltro ? '✨ Destaques da Categoria ✨' : '✨ Produtos em Destaque ✨'}
         </h2>
-
         {carregando ? (
           <p>Carregando...</p>
         ) : destaques.length === 0 ? (
@@ -71,7 +70,6 @@ export default function Home() {
         <h2>
           {categoriaFiltro ? '🍰 Produtos da Categoria' : '🍰 Todos os Nossos Produtos'}
         </h2>
-
         {carregando ? (
           <p>Carregando...</p>
         ) : produtosFiltrados.length === 0 ? (
