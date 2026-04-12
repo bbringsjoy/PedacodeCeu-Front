@@ -29,7 +29,7 @@ function Sidebar() {
       <h2 className="sidebar-titulo">Categorias</h2>
       <ul className="sidebar-lista">
         <li className="sidebar-item">
-          <NavLink to="/" end>🏠 Início</NavLink>
+          <NavLink to="/" end> Início</NavLink>
         </li>
 
         {categorias.length > 0 && (
@@ -41,7 +41,7 @@ function Sidebar() {
                   className="sidebar-btn"
                   onClick={() => handleCategoria(cat.id)}
                 >
-                  🍰 {cat.nome}
+                   {cat.nome}
                 </button>
               </li>
             ))}

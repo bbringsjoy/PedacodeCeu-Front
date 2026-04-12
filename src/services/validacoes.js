@@ -4,25 +4,10 @@ export function validarEmail(email) {
 }
 
 export function validarCPF(cpf) {
-  const apenasNumeros = cpf.replace(/\D/g, "");
-  if (apenasNumeros.length !== 11) return false;
-  if (/^(\d)\1+$/.test(apenasNumeros)) return false;
-
-  let soma = 0;
-  for (let i = 0; i < 9; i++) {
-    soma += parseInt(apenasNumeros[i]) * (10 - i);
-  }
-  let digito1 = (soma * 10) % 11;
-  if (digito1 === 10 || digito1 === 11) digito1 = 0;
-  if (digito1 !== parseInt(apenasNumeros[9])) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) {
-    soma += parseInt(apenasNumeros[i]) * (11 - i);
-  }
-  let digito2 = (soma * 10) % 11;
-  if (digito2 === 10 || digito2 === 11) digito2 = 0;
-  return digito2 === parseInt(apenasNumeros[10]);
+  const limpo = cpf.replace(/\D/g, "");
+  if (limpo.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(limpo)) return false;
+  return true;
 }
 
 export function validarSenha(senha) {

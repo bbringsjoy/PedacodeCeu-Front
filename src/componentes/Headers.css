@@ -5,7 +5,7 @@
   width: 100%;
   height: 80px;
   z-index: 1000;
-  background-color: #4b2c20;
+  background-color: #b7674a;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,7 +24,7 @@
 }
 
 .navbar-logo img {
-  height: 80px;
+  height: 64px;
   object-fit: contain;
 }
 
@@ -47,7 +47,7 @@
 
 .navbar-links .login-btn {
   background-color: #d2b48c;
-  color: #4b2c20;
+  color: #b7674a;
   padding: 6px 16px;
   border-radius: 20px;
   font-weight: 600;
@@ -72,7 +72,7 @@
 
 .btn-logout:hover {
   background: #d2b48c;
-  color: #4b2c20;
+  color: #b7674a;
 }
 
 .carrinho-btn {
@@ -89,7 +89,7 @@
   top: -8px;
   right: -10px;
   background: #d2b48c;
-  color: #4b2c20;
+  color: #b7674a;
   font-size: 0.7rem;
   font-weight: 700;
   border-radius: 50%;

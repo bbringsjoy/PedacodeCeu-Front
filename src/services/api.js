@@ -57,8 +57,13 @@ export async function editarUsuario(id, payload) {
 }
 
 export async function listarCategorias(pagina = 1, limite = 100) {
+  const token = getToken();
+  const headers = token
+    ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+    : { "Content-Type": "application/json" };
+
   const res = await fetch(`${BASE_URL}/categorias?pagina=${pagina}&limite=${limite}`, {
-    headers: headersAutenticados(),
+    headers,
   });
   return tratarResposta(res);
 }

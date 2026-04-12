@@ -933,3 +933,19 @@ a {
   line-height: 1.8;
   margin-bottom: 16px;
 }
+
+.hero-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-banner {
+  width: 100%;
+  max-width: 1000px;
+  text-align: center;
+  padding: 40px 20px;
+  background-color: rgba(125, 69, 53, 0.05);
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
