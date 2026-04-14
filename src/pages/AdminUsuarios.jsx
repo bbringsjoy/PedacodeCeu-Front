@@ -6,7 +6,14 @@ export default function AdminUsuarios() {
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
-  const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+  const [modalAberto, setModalAberto] = useState(false);
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+  const [novoRole, setNovoRole] = useState('usuario');
+  const [salvando, setSalvando] = useState(false);
+  const [erroModal, setErroModal] = useState('');
+
+  // ✅ CORRIGIDO (backend)
+  const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   function getHeaders() {
     return {
@@ -51,6 +58,41 @@ export default function AdminUsuarios() {
     }
   }
 
+  function abrirModal(usuario) {
+    setUsuarioSelecionado(usuario);
+    setNovoRole(usuario.role ?? 'usuario');
+    setErroModal('');
+    setModalAberto(true);
+  }
+
+  function fecharModal() {
+    setModalAberto(false);
+    setUsuarioSelecionado(null);
+  }
+
+  async function handleSalvarRole() {
+    if (!usuarioSelecionado) return;
+    setSalvando(true);
+    setErroModal('');
+    try {
+      const res = await fetch(`${BASE_URL}/usuarios/${usuarioSelecionado.id}/role`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ role: novoRole }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      await buscar();
+      fecharModal();
+    } catch (err) {
+      setErroModal(err instanceof Error ? err.message : 'Erro ao atualizar usuário');
+    } finally {
+      setSalvando(false);
+    }
+  }
+
   return (
     <div className="pagina-crud">
       <div className="pagina-crud__topo">
@@ -87,32 +129,87 @@ export default function AdminUsuarios() {
                     <td>{u.email}</td>
                     <td>{u.cpf}</td>
                     <td>
-                      <span style={{
-                        background: u.role === 'admin' ? '#4b2c20' : '#d2b48c',
-                        color: u.role === 'admin' ? '#F3E9DC' : '#4b2c20',
-                        padding: '3px 10px',
-                        borderRadius: 20,
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                      }}>
+                      <span
+                        style={{
+                          background: u.role === 'admin' ? '#4b2c20' : '#d2b48c',
+                          color: u.role === 'admin' ? '#F3E9DC' : '#4b2c20',
+                          padding: '3px 10px',
+                          borderRadius: 20,
+                          fontSize: '0.78rem',
+                          fontWeight: 600,
+                        }}
+                      >
                         {u.role === 'admin' ? 'Admin' : 'Usuário'}
                       </span>
                     </td>
                     <td>
-                      {u.role !== 'admin' && (
+                      <div className="tabela__acoes">
                         <button
-                          className="btn-sm btn-sm--deletar"
-                          onClick={() => handleDeletar(u.id)}
+                          className="btn-sm btn-sm--editar"
+                          onClick={() => abrirModal(u)}
                         >
-                          Excluir
+                          Editar
                         </button>
-                      )}
+
+                        {u.role !== 'admin' && (
+                          <button
+                            className="btn-sm btn-sm--deletar"
+                            onClick={() => handleDeletar(u.id)}
+                          >
+                            Excluir
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {modalAberto && usuarioSelecionado && (
+        <div className="modal-overlay" onClick={fecharModal}>
+          <div className="modal-caixa" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Editar Perfil — {usuarioSelecionado.nome}</h3>
+              <button className="modal-fechar" onClick={fecharModal}>✕</button>
+            </div>
+
+            <div className="modal-body">
+              <MensagemErro mensagem={erroModal} />
+
+              <div className="campo-grupo">
+                <label className="campo-label">Tipo de usuário</label>
+                <select
+                  className="campo-input"
+                  value={novoRole}
+                  onChange={(e) => setNovoRole(e.target.value)}
+                >
+                  <option value="usuario">Usuário</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                <button
+                  className="botao botao--secundario"
+                  onClick={fecharModal}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  className="botao botao--primario"
+                  onClick={handleSalvarRole}
+                  disabled={salvando}
+                >
+                  {salvando ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
